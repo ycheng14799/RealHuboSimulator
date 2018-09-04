@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/Scenes/testHUBO.unity
+  isLoaded: 1
+  isActive: 1

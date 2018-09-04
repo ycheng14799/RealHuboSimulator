@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - returnToCenter
+  - LSR
+  - TOR
+  - RSR
+  - Body_Torso
+  - Body_NKY
+  - Body_Hip
+  - Body_NK1
+  - Body_NK2
+  - Body_LHY
+  - Body_LHR
+  - Body_RHR
+  - Body_LHP
+  - Body_RHP
+  - Body_LKP
+  - Body_RKP
+  - Body_LAP
+  - Body_RAP
+  - Body_LAR
+  - Body_RAR
+  - Body_LSP
+  - Body_RSP
+  - Body_RSR
+  - Body_LSY
+  - Body_RSY
+  - Body_LEP
+  - Body_REP
+  - Body_LWY
+  - Body_RWY
+  - Body_LWR
+  - Body_RWR
+  - Body_LWP
+  - Body_RWP
+  - Body_LSR
+  - Body_RHY
+  - leftPalm
+  - rightPalm
+  - leftFoot
+  - rightFoot
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - PostProcessing
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
