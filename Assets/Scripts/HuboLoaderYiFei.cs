@@ -114,9 +114,9 @@ public class HuboLoaderYiFei : MonoBehaviour
 
         // Part specifications 
         XmlNodeList bodies = kinbody.SelectNodes("body");
-        
+
         // Place Hubo parts in scene 
-        foreach(XmlNode currPar in bodies)
+        foreach (XmlNode currPar in bodies)
         {
             // GameObject container for part
             string currParName = currPar.Attributes["name"].Value;
@@ -124,7 +124,7 @@ public class HuboLoaderYiFei : MonoBehaviour
 
             // Part mesh set-up
             XmlNodeList currParGeoms = currPar.SelectNodes("geom");
-            foreach(XmlNode currParGeom in currParGeoms)
+            foreach (XmlNode currParGeom in currParGeoms)
             {
                 // Part mesh
                 XmlNode render = currParGeom.SelectSingleNode("render");
@@ -147,14 +147,17 @@ public class HuboLoaderYiFei : MonoBehaviour
                     meshObj.tag = meshTag;
                     meshObj.transform.parent = currParObj.transform;
                     // Collision hull
+                    
                     string hullName = colHull.InnerText;
                     int hullNamePerIdx = hullName.IndexOf(".");
                     hullName = hullName.Substring(0, hullNamePerIdx);
                     GameObject hull = Resources.Load(hullName) as GameObject;
                     Mesh hullMesh = hull.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh;
+                    // Get mesh bounds 
                     meshObj.AddComponent<MeshCollider>();
                     meshObj.GetComponent<MeshCollider>().sharedMesh = hullMesh;
                     meshObj.GetComponent<MeshCollider>().convex = true;
+                    
                 }
                 // cylinders 
                 if (currParGeom.Attributes["type"].Value == "cylinder")
@@ -180,7 +183,7 @@ public class HuboLoaderYiFei : MonoBehaviour
                     // Set scale
                     box.transform.localScale = this.parseVector(currParGeom.SelectSingleNode("extents").InnerText);
                     // Set translation 
-                    if (currParGeom.SelectSingleNode("translation")!= null)
+                    if (currParGeom.SelectSingleNode("translation") != null)
                     {
                         box.transform.localPosition = this.parseVector(currParGeom.SelectSingleNode("translation").InnerText);
                     }
@@ -189,14 +192,14 @@ public class HuboLoaderYiFei : MonoBehaviour
         }
 
         // Set up hierarchy & assemble 
-        foreach(XmlNode currPar in bodies)
+        foreach (XmlNode currPar in bodies)
         {
             // Get name of current part 
             string currParName = currPar.Attributes["name"].Value;
 
             // The Body_Torso part is designated as the root 
             // All other parts will be a child of Body_Torso 
-            if(currParName != "Body_Torso")
+            if (currParName != "Body_Torso")
             {
                 // Get part 
                 GameObject currParObj = GameObject.Find(currParName);
@@ -207,55 +210,133 @@ public class HuboLoaderYiFei : MonoBehaviour
                 currParObj.transform.parent = currParParent.transform;
 
                 // Apply local translation 
-                currParObj.transform.localPosition = this.parseVector(currPar.SelectSingleNode("translation").InnerText); 
+                currParObj.transform.localPosition = this.parseVector(currPar.SelectSingleNode("translation").InnerText);
 
             }
         }
+
+        // Attach RigidBodies 
         
-        /*
-        // Assign phyical properties to rigidbodies 
-        for (int n = 0; n < bodies.Count; n++)
+        foreach (XmlNode currPar in bodies)
         {
+            string currParName = currPar.Attributes["name"].Value;
+            GameObject currParObj = GameObject.Find(currParName);
+            currParObj.AddComponent<Rigidbody>();
+            currParObj.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            currParObj.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            currParObj.GetComponent<Rigidbody>().useGravity = false;
+
+            // Physical properties 
+            XmlNode physicsProps = currPar.SelectSingleNode("mass");
+            XmlNode totalMass = physicsProps.SelectSingleNode("total");
+            XmlNode com = physicsProps.SelectSingleNode("com");
+            float partMass = float.Parse(totalMass.InnerText);
+            Vector3 partCoM;
+            if (com != null)
             {
-                XmlNode curPar = bodies.Item(n);
-
-                bodyName = curPar.Attributes["name"].Value;
-
-                curObj = GameObject.Find(bodyName);
-
-                curObj.AddComponent<Rigidbody>().useGravity = false;
-
-                XmlNode mass = curPar.SelectSingleNode("mass");
-                XmlNode totalMass = mass.SelectSingleNode("total");
-                XmlNode com = mass.SelectSingleNode("com");
-
-                massVal = float.Parse(totalMass.InnerText);
-
-
-                if(com != null)
-                {
-                    string axisStr = com.InnerText; //parent to current
-                    space1Count = axisStr.IndexOf(" ");
-                    traXstr = axisStr.Substring(0, space1Count);
-                    space2Count = axisStr.Substring(space1Count + 1, axisStr.Length - (space1Count + 1)).IndexOf(" ");
-                    traYstr = axisStr.Substring(space1Count + 1, space2Count);
-                    space2Count = space1Count + space2Count;
-                    traZstr = axisStr.Substring(space2Count + 1, axisStr.Length - (space2Count + 1));
-
-
-                    massPos.x = float.Parse(traXstr);
-                    massPos.y = float.Parse(traYstr);
-                    massPos.z = float.Parse(traZstr);
-                }
-
-                curObj.GetComponent<Rigidbody>().mass = massVal;
-                curObj.GetComponent<Rigidbody>().centerOfMass = massPos;
-
-
-
+                partCoM = this.parseVector(com.InnerText);
+            } else
+            {
+                partCoM = Vector3.zero;
             }
+            currParObj.GetComponent<Rigidbody>().mass = partMass;
+            currParObj.GetComponent<Rigidbody>().centerOfMass = partCoM;
         }
         
+        
+        // Setup joints 
+        /*
+        XmlNodeList joints = kinbody.SelectNodes("Joint");
+        Debug.Log(joints.Count);
+        foreach(XmlNode joint in joints)
+        {
+            // Get joined parts 
+            XmlNodeList joinedParts = joint.SelectNodes("body");
+            string parentPartString = joinedParts.Item(0).InnerText;
+            string childPartString = joinedParts.Item(1).InnerText;
+            GameObject parentPart = GameObject.Find(parentPartString);
+            GameObject childPart = GameObject.Find(childPartString);
+
+            // Attach joint 
+            childPart.AddComponent<ConfigurableJoint>();
+            childPart.GetComponent<ConfigurableJoint>().connectedBody = parentPart.GetComponent<Rigidbody>();
+
+            // Configure joint 
+            ConfigurableJoint partJoint = childPart.GetComponent<ConfigurableJoint>();
+
+            // Constraint translation
+            partJoint.xMotion = ConfigurableJointMotion.Locked;
+            partJoint.yMotion = ConfigurableJointMotion.Locked; 
+            partJoint.zMotion = ConfigurableJointMotion.Locked;
+
+            // Rotational constraints 
+            if(joint.SelectSingleNode("axis") != null) {
+                Vector3 rotationConstraint = this.parseVector(joint.SelectSingleNode("axis").InnerText);
+                if(rotationConstraint.x == 0)
+                {
+                    partJoint.angularXMotion = ConfigurableJointMotion.Locked;
+                } 
+                if(rotationConstraint.y == 0)
+                {
+                    partJoint.angularYMotion = ConfigurableJointMotion.Locked;
+                }
+                if(rotationConstraint.z == 0)
+                {
+                    partJoint.angularZMotion = ConfigurableJointMotion.Locked;
+                }
+            }
+
+            // Set adjacent parts to ignore collisions with each other 
+            List<Collider> childCols = new List<Collider>();
+            List<Collider> parentCols = new List<Collider>();
+            foreach (Transform child in childPart.transform)
+            {
+                if(child.gameObject.GetComponent<BoxCollider>() != null)
+                {
+                    childCols.Add(child.gameObject.GetComponent<BoxCollider>());
+                }
+                if (child.gameObject.GetComponent<CapsuleCollider>() != null)
+                {
+                    childCols.Add(child.gameObject.GetComponent<CapsuleCollider>());
+                }
+            }
+            foreach (Transform parent in parentPart.transform)
+            {
+                if(parent.gameObject.GetComponent<BoxCollider>() != null)
+                {
+                    parentCols.Add(parent.gameObject.GetComponent<BoxCollider>());
+                }
+                if (parent.gameObject.GetComponent<CapsuleCollider>() != null)
+                {
+                    parentCols.Add(parent.gameObject.GetComponent<CapsuleCollider>());
+                }
+            }
+            Debug.Log(childCols.Count);
+            Debug.Log(parentCols.Count);
+            for (int i = 0; i < childCols.Count - 1; i++)
+            {
+                for (int j = i + 1; j < childCols.Count; j++) {
+                    Physics.IgnoreCollision(childCols[i], childCols[j], true);
+                }
+            }
+            for (int i = 0; i < parentCols.Count - 1; i++)
+            {
+                for (int j = i + 1; j < parentCols.Count; j++)
+                {
+                    Physics.IgnoreCollision(parentCols[i], parentCols[j], true);
+                }
+            }
+            for (int i = 0; i < childCols.Count; i++)
+            {
+                for (int j = 0; j < parentCols.Count; j++)
+                {
+                    Physics.IgnoreCollision(childCols[i], parentCols[j], true);
+                }
+            }
+        }
+        */
+
+        /*
         //joint stuff
         XmlNodeList joints = kinbody.SelectNodes("Joint");
         for (int o = 0; o < joints.Count; o++)
@@ -267,7 +348,7 @@ public class HuboLoaderYiFei : MonoBehaviour
             //print(jointBody1);
             //print(jointBody2);
 
-            
+
 
             GameObject child = GameObject.Find(jointBody2);
             GameObject parent = GameObject.Find(jointBody1);
@@ -339,9 +420,9 @@ public class HuboLoaderYiFei : MonoBehaviour
             SoftJointLimit limMaxSoft = curJoint.highAngularXLimit;
             limMaxSoft.limit = limMax;
             curJoint.lowAngularXLimit = limMaxSoft;
-            
+
             {
-            */
+                */
         /*
         if (axX != 0)
         {
@@ -381,6 +462,53 @@ public class HuboLoaderYiFei : MonoBehaviour
     //dont forget to set axis and fix limits
 
 }
+*/
+        
+        /*
+        // Assign phyical properties to rigidbodies 
+        for (int n = 0; n < bodies.Count; n++)
+        {
+            {
+                XmlNode curPar = bodies.Item(n);
+
+                bodyName = curPar.Attributes["name"].Value;
+
+                curObj = GameObject.Find(bodyName);
+
+                curObj.AddComponent<Rigidbody>().useGravity = false;
+
+                XmlNode mass = curPar.SelectSingleNode("mass");
+                XmlNode totalMass = mass.SelectSingleNode("total");
+                XmlNode com = mass.SelectSingleNode("com");
+
+                massVal = float.Parse(totalMass.InnerText);
+
+
+                if(com != null)
+                {
+                    string axisStr = com.InnerText; //parent to current
+                    space1Count = axisStr.IndexOf(" ");
+                    traXstr = axisStr.Substring(0, space1Count);
+                    space2Count = axisStr.Substring(space1Count + 1, axisStr.Length - (space1Count + 1)).IndexOf(" ");
+                    traYstr = axisStr.Substring(space1Count + 1, space2Count);
+                    space2Count = space1Count + space2Count;
+                    traZstr = axisStr.Substring(space2Count + 1, axisStr.Length - (space2Count + 1));
+
+
+                    massPos.x = float.Parse(traXstr);
+                    massPos.y = float.Parse(traYstr);
+                    massPos.z = float.Parse(traZstr);
+                }
+
+                curObj.GetComponent<Rigidbody>().mass = massVal;
+                curObj.GetComponent<Rigidbody>().centerOfMass = massPos;
+
+
+
+            }
+        }
+        
+        
 
 
 
@@ -444,13 +572,13 @@ GameObject.Find("Body_Torso").GetComponent<Rigidbody>().isKinematic = true;
 
 
     }
-    /*
-    void Update()
-    {
+            /*
+            void Update()
+            {
 
-        if (Input.GetKey("escape"))
-            Application.Quit();
-    }
-    */
-}
+                if (Input.GetKey("escape"))
+                    Application.Quit();
+            }
+            */
+        }
 //Use configurable joint limits to store limits in order to pass them to the joints script
