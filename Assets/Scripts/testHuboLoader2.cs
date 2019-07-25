@@ -96,7 +96,7 @@ public class testHuboLoader2 : MonoBehaviour
         XmlNodeList collisionIgnores = kinbody.SelectNodes("adjacent");
 
         //print(bodies.Count);
-
+        // Component instantiation 
         for (int i = 0; i < bodies.Count; i++)
         {
             XmlNode curPar = bodies.Item(i);
@@ -106,7 +106,7 @@ public class testHuboLoader2 : MonoBehaviour
 
             newBod = GameObject.Find("blank(Clone)");
             newBod.name = curPar.Attributes["name"].Value;
-
+            
             for (int j = 0; j < geoms.Count; j++)
             {
                 XmlNode curGeom = geoms.Item(j);
@@ -119,7 +119,6 @@ public class testHuboLoader2 : MonoBehaviour
                     hullName = data.InnerText;
                     perCount = bodyName.IndexOf(".");
                     bodyName = bodyName.Substring(0, perCount);
-
                     perCount = hullName.IndexOf(".");
                     hullName = hullName.Substring(0, perCount);
 
@@ -190,7 +189,8 @@ public class testHuboLoader2 : MonoBehaviour
 
             //print(curPar.Attributes["name"].Value);
         }
-
+        
+        // Torso set-up 
         for (int k = 0; k < bodies.Count; k++)
         {
             XmlNode curPar = bodies.Item(k);
@@ -247,6 +247,7 @@ public class testHuboLoader2 : MonoBehaviour
             }
         }
 
+        // Assembly 
         for (int l = 0; l < bodies.Count; l++)
         {
             XmlNode curPar = bodies.Item(l);
@@ -266,9 +267,12 @@ public class testHuboLoader2 : MonoBehaviour
                 traX = 0;
                 traY = 0;
                 traZ = 0;
+                Debug.Log(translations.Count);
                 for (int m = 0; m < translations.Count; m++)
                 {
                     bodyTranslate = translations.Item(m).InnerText; //parent to current
+                    Debug.Log(curObj.name);
+                    Debug.Log(bodyTranslate);
                     //print("Ping");                                                //        //print(bodyTranslate);
                     space1Count = bodyTranslate.IndexOf(" ");
                     traXstr = bodyTranslate.Substring(0, space1Count);
@@ -296,9 +300,8 @@ public class testHuboLoader2 : MonoBehaviour
                 //        //curHullTrans.position = pos;
             }
         }
-
-
-
+        
+        // Assign phyical properties to rigidbodies 
         for (int n = 0; n < bodies.Count; n++)
         {
             {
@@ -340,6 +343,7 @@ public class testHuboLoader2 : MonoBehaviour
 
             }
         }
+        
         //joint stuff
         XmlNodeList joints = kinbody.SelectNodes("Joint");
         for (int o = 0; o < joints.Count; o++)
@@ -423,8 +427,9 @@ public class testHuboLoader2 : MonoBehaviour
             SoftJointLimit limMaxSoft = curJoint.highAngularXLimit;
             limMaxSoft.limit = limMax;
             curJoint.lowAngularXLimit = limMaxSoft;
-
+            
             {
+            
                 /*
                 if (axX != 0)
                 {
@@ -452,8 +457,9 @@ public class testHuboLoader2 : MonoBehaviour
                     //child.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX;
                 }
                 */
+                
             }
-
+                
             curJoint.connectedBody = parent.GetComponent<Rigidbody>();
             curJoint.axis = new Vector3(axX, axY, axZ); /////set AXIS
             //print(curJoint);
@@ -463,10 +469,10 @@ public class testHuboLoader2 : MonoBehaviour
             //dont forget to set axis and fix limits
 
         }
+        
 
 
-
-
+        /*
         for (int n = 0; n < bodies.Count; n++)
         {
             {
@@ -522,15 +528,17 @@ public class testHuboLoader2 : MonoBehaviour
         GameObject.Find("Body_Torso").GetComponent<Rigidbody>().isKinematic = true;
 
 
+        */
 
-
-
+       
     }
+    /*
     void Update()
     {
 
         if (Input.GetKey("escape"))
             Application.Quit();
     }
+    */
 }
 //Use configurable joint limits to store limits in order to pass them to the joints script
