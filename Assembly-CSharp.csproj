@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\CameraMovement.cs" />
     <Compile Include="Assets\Scripts\dataRetrieval.cs" />
+    <Compile Include="Assets\Scripts\HuboLoaderYiFei.cs" />
     <Compile Include="Assets\Scripts\HUBOUnivJoint.cs" />
     <Compile Include="Assets\Scripts\HUBOUnivJoint2.cs" />
     <Compile Include="Assets\Scripts\Item.cs" />
@@ -95,6 +96,7 @@
     <None Include="Assets\Resources\SimChange.txt" />
     <None Include="Assets\Resources\righthand.kinbody.xml" />
     <None Include="Assets\Resources\Pos2.txt" />
+    <None Include="Assets\Resources\hubo2YiFei.kinbody.xml" />
     <None Include="Assets\Resources\hubo2.kinbody.xml" />
     <None Include="Assets\Resources\rlhuboplus.kinbody.xml" />
     <None Include="Assets\Resources\Pos5.txt" />

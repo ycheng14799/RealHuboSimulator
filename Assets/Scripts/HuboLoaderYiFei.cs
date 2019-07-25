@@ -207,125 +207,12 @@ public class HuboLoaderYiFei : MonoBehaviour
                 currParObj.transform.parent = currParParent.transform;
 
                 // Apply local translation 
-                currParObj.transform.localPosition = this.parseVector(currPar.SelectSingleNode("translation").InnerText);
+                currParObj.transform.localPosition = this.parseVector(currPar.SelectSingleNode("translation").InnerText); 
 
-            }
-
-            
-        }
-        /*
-        // Torso set-up 
-        for (int k = 0; k < bodies.Count; k++)
-        {
-            XmlNode curPar = bodies.Item(k);
-
-            bodyName = curPar.Attributes["name"].Value;
-
-            curObj = GameObject.Find(bodyName);
-
-            //newBod.AddComponent<Rigidbody>();
-
-            if (curObj.name == "Body_Torso")
-            {
-                curObj.transform.position = new Vector3(0, 0, 0);
-            }
-            else
-            {
-                XmlNode offsetBody = curPar.SelectSingleNode("offsetfrom");
-                parentName = offsetBody.InnerText;
-                curObj.transform.SetParent(GameObject.Find(parentName).transform);
-
-                //    XmlNodeList translations = curPar.SelectNodes("translation");
-
-                //    {
-                //        bodyTranslate = translations.Item(1).InnerText; //parent to current
-                //        //print(bodyTranslate);
-                //        space1Count = bodyTranslate.IndexOf(" ");
-                //        traXstr = bodyTranslate.Substring(0, space1Count);
-                //        space2Count = bodyTranslate.Substring(space1Count + 1, bodyTranslate.Length - (space1Count + 1)).IndexOf(" ");
-                //        traYstr = bodyTranslate.Substring(space1Count + 1, space2Count);
-                //        space2Count = space1Count + space2Count;
-                //        traZstr = bodyTranslate.Substring(space2Count + 1, bodyTranslate.Length - (space2Count + 1));
-
-                //        traX = float.Parse(traXstr);
-                //        traY = float.Parse(traYstr);
-                //        traZ = float.Parse(traZstr);
-
-                //        //curObj.transform.Rotate(rotCor);
-
-                //        curObjTrans = curObj.GetComponent<Transform>();
-
-                //        //curHull = GameObject.Find(hullName);
-                //        //curHullTrans = curHull.GetComponent<Transform>();
-
-
-                //        pos = new Vector3(traX, traY, traZ);
-
-                //        curObjTrans.position = pos;
-                //        //curObjTrans.rotation = Quaternion.Euler(Vector3.zero);
-                //        //curHullTrans.position = pos;
-                //    }
-
-
-
-            }
-        }
-        */
-        /*
-        // Assembly 
-        for (int l = 0; l < bodies.Count; l++)
-        {
-            XmlNode curPar = bodies.Item(l);
-
-            bodyName = curPar.Attributes["name"].Value;
-
-            curObj = GameObject.Find(bodyName);
-
-
-            //    XmlNode offsetBody = curPar.SelectSingleNode("offsetfrom");
-            //    parentName = offsetBody.InnerText;
-            //    curObj.transform.SetParent(GameObject.Find(parentName).transform);
-
-            XmlNodeList translations = curPar.SelectNodes("translation");
-
-            {
-                traX = 0;
-                traY = 0;
-                traZ = 0;
-                Debug.Log(translations.Count);
-                for (int m = 0; m < translations.Count; m++)
-                {
-                    bodyTranslate = translations.Item(m).InnerText; //parent to current
-                    Debug.Log(curObj.name);
-                    Debug.Log(bodyTranslate);
-                    //print("Ping");                                                //        //print(bodyTranslate);
-                    space1Count = bodyTranslate.IndexOf(" ");
-                    traXstr = bodyTranslate.Substring(0, space1Count);
-                    space2Count = bodyTranslate.Substring(space1Count + 1, bodyTranslate.Length - (space1Count + 1)).IndexOf(" ");
-                    traYstr = bodyTranslate.Substring(space1Count + 1, space2Count);
-                    space2Count = space1Count + space2Count;
-                    traZstr = bodyTranslate.Substring(space2Count + 1, bodyTranslate.Length - (space2Count + 1));
-
-                    traX = float.Parse(traXstr) + traX;
-                    traY = float.Parse(traYstr) + traY;
-                    traZ = float.Parse(traZstr) + traZ;
-
-                    //        //curObj.transform.Rotate(rotCor);
-
-                    curObjTrans = curObj.GetComponent<Transform>();
-                    pos = new Vector3(traX, traY, traZ);
-                }
-                //print(bodyName);
-                //print(pos);
-                //print(traX);
-                //print(traY);
-                //print(traZ);
-                curObjTrans.localPosition = new Vector3(traX, traY, traZ);
-                //curObjTrans.rotation = Quaternion.Euler(Vector3.zero);
-                //        //curHullTrans.position = pos;
             }
         }
         
+        /*
         // Assign phyical properties to rigidbodies 
         for (int n = 0; n < bodies.Count; n++)
         {
